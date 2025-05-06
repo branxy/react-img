@@ -5,23 +5,40 @@ import {
   uploadNewImageToStorage,
   validateFiles,
 } from "@/lib/utils"
-import { allowedImageUploadExtensions, demoImageUrl } from "@/lib/constants"
+import { allowedImageUploadExtensions, demoImageUrls } from "@/lib/constants"
+import { useState } from "react"
 
 export const Demo = () => {
+  const [images] = useState(demoImageUrls)
+
   return (
-    <FileUploadInput
-      category="image"
-      initialFileURL={demoImageUrl}
-      previewSize={400}
-      acceptedFileTypes={allowedImageUploadExtensions.join(", ")}
-      getNewFileURLOnFileSelect={async (e, prevFileURL) => {
-        const { ok, message } = validateFiles(e.target.files)
-        if (!ok) return { success: false, data: null, message }
+    <div className="flex items-start gap-4">
+      {images.map(({ url }) => (
+        <FileUploadInput
+          key={url}
+          category="image"
+          initialFileURL={url}
+          previewSize={400}
+          acceptedFileTypes={allowedImageUploadExtensions.join(", ")}
+          getNewFileURLOnFileSelect={async (e, prevFileURL) => {
+            const { ok, message } = validateFiles(e.target.files)
+            if (!ok) return { success: false, data: null, message }
 
-        await deleteOldImageFromStorage(prevFileURL)
+            await deleteOldImageFromStorage(prevFileURL)
 
-        return uploadNewImageToStorage(e.target.files![0])
-      }}
-    />
+            return uploadNewImageToStorage(e.target.files![0])
+          }}
+        />
+      ))}
+    </div>
   )
 }
+
+// {
+//     "https://images.unsplash.com/...": {
+//         "initialFileURL": "https://images.unsplash.com/..."
+//     },
+//     "https://images.unsplash.com/...": {
+//         "initialFileURL": "https://images.unsplash.com/..."
+//     }
+// }

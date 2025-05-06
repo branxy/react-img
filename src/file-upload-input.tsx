@@ -30,7 +30,7 @@ interface BaseProps {
   ) => UniversalNetworkResponseWithData<string>
 }
 
-interface ImageProps extends BaseProps {
+export interface Image extends BaseProps {
   category: "image"
   alt?: string
   previewSize: 240 | 300 | 400
@@ -40,7 +40,7 @@ interface AudioProps extends BaseProps {
   category: "audio"
 }
 
-type FileUploadProps = AudioProps | ImageProps
+type FileUploadProps = AudioProps | Image
 
 type FileUpdateState =
   | { status: "idle" }
@@ -128,13 +128,13 @@ const FilePreview = ({
   initialFileURL: FileUploadProps["initialFileURL"]
   currentURL: string | null
   alt: string | undefined
-  imgSize: ImageProps["previewSize"] | undefined
+  imgSize: Image["previewSize"] | undefined
   category: FileUploadProps["category"]
   fileUpdateState: FileUpdateState
   filePickerRef: RefObject<HTMLInputElement | null>
 }) => {
   const imageShapeCN: Record<
-    ImageProps["previewSize"],
+    Image["previewSize"],
     NonNullable<HTMLAttributes<HTMLDivElement>["className"]>
   > = {
     "300": "mx-auto size-48 @lg:size-[300px]",
@@ -151,27 +151,29 @@ const FilePreview = ({
           {fileUpdateState.status === "loading" ? (
             <Skeleton className={imageShapeCN[imgSize ?? 300]} />
           ) : (
-            <img
-              src={currentURL ?? initialFileURL}
-              alt={alt}
-              width={imgSize}
-              height={imgSize}
-              className={cn(
-                imageShapeCN,
-                "object-contain border-2 border-neutral-700"
-              )}
-            />
+            <div className="w-100 relative group">
+              <img
+                src={currentURL ?? initialFileURL}
+                alt={alt}
+                width={imgSize}
+                height={imgSize}
+                className={cn(
+                  imageShapeCN,
+                  "object-contain border-2 border-neutral-700"
+                )}
+              />
+              <div className="absolute top-0 left-0 size-full group-hover:backdrop-blur-sm transition-all" />
+              <Button
+                type="button"
+                size="lg"
+                variant="default"
+                onClick={() => filePickerRef.current?.click()}
+                className="min-w-48 absolute hidden group-hover:inline-flex -bottom-3 group-hover:bottom-1 left-1/2 -translate-x-1/2 group-hover:-translate-y-1/2 bg-blue-300 animate-fade-in-scale hover:ring"
+              >
+                <FolderSearch />
+              </Button>
+            </div>
           )}
-          <Button
-            type="button"
-            size="lg"
-            variant="outline"
-            onClick={() => filePickerRef.current?.click()}
-            disabled={fileUpdateState.status === "loading"}
-            className="mx-auto mt-4 min-w-48"
-          >
-            <FolderSearch />
-          </Button>
         </div>
       )
 
