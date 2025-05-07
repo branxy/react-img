@@ -33,12 +33,3 @@ export const Demo = () => {
     </div>
   )
 }
-
-// {
-//     "https://images.unsplash.com/...": {
-//         "initialFileURL": "https://images.unsplash.com/..."
-//     },
-//     "https://images.unsplash.com/...": {
-//         "initialFileURL": "https://images.unsplash.com/..."
-//     }
-// }
